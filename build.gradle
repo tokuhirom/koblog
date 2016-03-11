@@ -1,0 +1,67 @@
+buildscript {
+    ext {
+        springBootVersion = '1.3.3.RELEASE'
+    }
+    repositories {
+        mavenCentral()
+    }
+    dependencies {
+        classpath("org.springframework.boot:spring-boot-gradle-plugin:${springBootVersion}")
+        classpath('se.transmode.gradle:gradle-docker:1.2')
+    }
+}
+
+def PORT = 8080
+
+apply plugin: 'idea'
+apply plugin: 'spring-boot'
+apply plugin: 'docker'
+
+jar {
+    baseName = 'koblog'
+    version = '0.0.1-SNAPSHOT'
+}
+sourceCompatibility = 1.8
+targetCompatibility = 1.8
+
+repositories {
+    mavenCentral()
+    maven { url 'http://amateras.sourceforge.jp/mvn/' }
+}
+
+dependencies {
+    compile('org.springframework.boot:spring-boot-starter-actuator')
+    compile('org.springframework.boot:spring-boot-devtools')
+    compile('org.springframework.boot:spring-boot-starter-freemarker')
+    compile('org.springframework.boot:spring-boot-starter-jetty')
+    compile('org.projectlombok:lombok:1.16.6')
+    compile('org.springframework.session:spring-session')
+    compile('org.springframework.boot:spring-boot-starter-web')
+    compile 'org.mockito:mockito-all:1.10.19'
+    compile 'io.github.gitbucket:markedj:1.0.6'
+    testCompile 'org.assertj:assertj-core:3.3.0'
+    testCompile('org.springframework.boot:spring-boot-starter-test')
+}
+
+bootRun {
+    systemProperty "spring.freemarker.templateLoaderPath", "file:${project.projectDir}/src/main/resources/templates/,classpath:/templates/"
+    systemProperty "server.port", PORT
+    systemProperty "management.port", PORT + 100
+}
+
+// ./gradlew build buildDocker
+task buildDocker(type: Docker, dependsOn: build) {
+    push = true
+    applicationName = jar.baseName
+    dockerfile = file('src/main/docker/Dockerfile')
+    doFirst {
+        copy {
+            from jar
+            into stageDir
+        }
+    }
+}
+
+task wrapper(type: Wrapper) {
+    gradleVersion = '2.11'
+}
