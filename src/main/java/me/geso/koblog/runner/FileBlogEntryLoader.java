@@ -2,7 +2,7 @@ package me.geso.koblog.runner;
 
 import lombok.extern.slf4j.Slf4j;
 import me.geso.koblog.domain.BlogEntry;
-import me.geso.koblog.domain.BlogEntryRepository;
+import me.geso.koblog.repository.BlogEntryRepository;
 import me.geso.koblog.exception.UnknownHeaderException;
 import me.geso.koblog.formatter.MarkdownFormatter;
 import me.geso.koblog.settings.KoblogSettings;

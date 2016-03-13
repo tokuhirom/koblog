@@ -39,14 +39,25 @@ dependencies {
     compile('org.springframework.boot:spring-boot-starter-web')
     compile 'org.mockito:mockito-all:1.10.19'
     compile 'io.github.gitbucket:markedj:1.0.6'
+    compile("org.springframework.boot:spring-boot-starter-security")
+
+    // webjars
+    compile 'org.webjars:bootstrap:4.0.0-alpha.2'
+
+    // testing stuff
     testCompile 'org.assertj:assertj-core:3.3.0'
     testCompile('org.springframework.boot:spring-boot-starter-test')
 }
 
 bootRun {
+    systemProperties System.properties
+
     systemProperty "spring.freemarker.templateLoaderPath", "file:${project.projectDir}/src/main/resources/templates/,classpath:/templates/"
     systemProperty "server.port", PORT
     systemProperty "management.port", PORT + 100
+
+    excludeDevtools = true
+    executable = true
 }
 
 // ./gradlew build buildDocker

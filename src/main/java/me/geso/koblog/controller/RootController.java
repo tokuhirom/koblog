@@ -2,9 +2,9 @@ package me.geso.koblog.controller;
 
 import lombok.extern.slf4j.Slf4j;
 import me.geso.koblog.domain.BlogEntry;
-import me.geso.koblog.domain.BlogEntryRepository;
-import me.geso.koblog.domain.Pager;
+import me.geso.koblog.domain.Paginated;
 import me.geso.koblog.exception.NotFoundException;
+import me.geso.koblog.repository.BlogEntryRepository;
 import me.geso.koblog.settings.KoblogSettings;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -15,7 +15,6 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import javax.servlet.http.HttpServletRequest;
-import java.util.List;
 
 @Slf4j
 @Controller
@@ -32,10 +31,9 @@ public class RootController {
     ) {
         log.info(koblogSettings.getFilePath());
         long limit = 20;
-        List<BlogEntry> entries = blogEntryRepository.getBlogEntries();
-        Pager pager = new Pager(page, limit, entries.size());
-        model.addAttribute("entries", pager.slice(entries));
-        model.addAttribute("pager", pager);
+        Paginated<BlogEntry> paginated = blogEntryRepository.getBlogEntries(page, limit);
+        model.addAttribute("entries", paginated.getEntries());
+        model.addAttribute("pager", paginated);
         return "index";
     }
 
@@ -53,8 +51,15 @@ public class RootController {
     }
 
     @RequestMapping(value = "/search/{keyword}", method = RequestMethod.GET)
-    public String search(@PathVariable("keyword") String keyword, Model model) {
+    public String search(
+            @PathVariable("keyword") String keyword,
+            @RequestParam(value = "page", defaultValue = "1") long page,
+            Model model) {
+        int limit = 20;
         model.addAttribute("keyword", keyword);
+        Paginated<BlogEntry> paginated = blogEntryRepository.search(keyword, page, limit);
+        model.addAttribute("entries", paginated.getEntries());
+        model.addAttribute("pager", paginated);
         return "search";
     }
 }

@@ -1,4 +1,4 @@
-<#-- @ftlvariable name="pager" type="me.geso.koblog.domain.Pager" -->
+<#-- @ftlvariable name="pager" type="me.geso.koblog.domain.Paginated<me.geso.koblog.domain.BlogEntry>" -->
 <#-- @ftlvariable name="entries" type="java.util.List<me.geso.koblog.domain.BlogEntry>" -->
 
 <#import "__wrapper.ftl" as wrapper>
@@ -11,7 +11,7 @@
     </#list>
 
 <div>
-    <#if pager.hasNext()>
+    <#if pager.hasNext>
         next...
     </#if>
 </div>
